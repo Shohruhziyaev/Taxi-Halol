@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Haydovchi Ro'yxatga Olish</title>
+</head>
+<body>
+    <h2>Haydovchi Ro'yxatga Olish Formasi</h2>
+    <form id="driverForm">
+        <label>F.I.Sh:</label><br>
+        <input type="text" name="fullName" required><br><br>
+
+        <label>Telefon raqam:</label><br>
+        <input type="text" name="phone" required><br><br>
+
+        <label>Avtomobil markasi va raqami:</label><br>
+        <input type="text" name="carInfo" required><br><br>
+
+        <label>Pasport rasmi havolasi (Google Drive yoki Telegram):</label><br>
+        <input type="text" name="passportLink"><br><br>
+
+        <label>Guvohnoma rasmi havolasi:</label><br>
+        <input type="text" name="licenseLink"><br><br>
+
+        <label>Izoh:</label><br>
+        <textarea name="comment"></textarea><br><br>
+
+        <button type="submit">Yuborish</button>
+    </form>
+
+    <p id="status"></p>
+
+    <script>
+        const botToken = "7998740549:AAGn2JCaB2iDphZdrjKtQ5Lb2cdSjqJYbmA";
+        const chatId = "-1751930186";
+
+        document.getElementById("driverForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            const fullName = form.fullName.value;
+            const phone = form.phone.value;
+            const carInfo = form.carInfo.value;
+            const passportLink = form.passportLink.value;
+            const licenseLink = form.licenseLink.value;
+            const comment = form.comment.value;
+
+            const message = `
+🚖 <b>Yangi haydovchi ro'yxatdan o'tdi:</b>
+👤 Ism: <b>${fullName}</b>
+📞 Tel: <b>${phone}</b>
+🚗 Avto: <b>${carInfo}</b>
+🆔 Pasport rasmi: ${passportLink || 'Kiritilmagan'}
+🪪 Guvohnoma rasmi: ${licenseLink || 'Kiritilmagan'}
+📝 Izoh: ${comment || 'Yo‘q'}
+            `;
+
+            fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    chat_id: chatId,
+                    text: message,
+                    parse_mode: "HTML"
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("status").textContent = "✅ Ma'lumot yuborildi!";
+                form.reset();
+            })
+            .catch(error => {
+                document.getElementById("status").textContent = "❌ Xatolik yuz berdi!";
+                console.error(error);
+            });
+        });
+    </script>
+</body>
+</html>
